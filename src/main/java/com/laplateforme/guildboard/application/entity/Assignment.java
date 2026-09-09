@@ -1,5 +1,7 @@
 package com.laplateforme.guildboard.application.entity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 
 
@@ -10,12 +12,14 @@ public class Assignment{
     @GeneratedValue
     private Long id;
 
-    @OneToMany
-    @JoinColumn(name = adventurer_id)
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "adventurer_id", nullable = false)
     private Adventurer adventurer;
 
-    @OneToMany
-    @JoinColumn(name=quest_id)
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "quest_id", nullable = false)
     private Quest quest;
 
     private LocalDateTime assigned_at;
