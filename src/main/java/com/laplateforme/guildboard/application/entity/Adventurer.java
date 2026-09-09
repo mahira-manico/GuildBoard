@@ -19,13 +19,13 @@ public class Adventurer {
     private CharacterClass characterClass;
 
     @Size(min=1)
-    private int level;
+    private Integer level;
 
     @Size(min=0)
-    private int xp;
+    private Integer xp;
 
     @Size(min=0)
-    private int gold;
+    private Integer gold;
 
     protected Adventurer(){}
 
@@ -73,15 +73,15 @@ public class Adventurer {
         this.characterClass = characterClass;
     }
 
-    public void setLevel(int level) {
+    public void setLevel(Integer level) {
         this.level = level;
     }
 
-    public void setXp(int xp) {
+    public void setXp(Integer xp) {
         this.xp = xp;
     }
 
-    public void setGold(int gold) {
+    public void setGold(Integer gold) {
         this.gold = gold;
     }
 }

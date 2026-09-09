@@ -1,4 +1,4 @@
 package com.laplateforme.guildboard.application.dto;
 
-public class AdventurerAnswerDTO {
+public record AssignmentRequest(Long id) {
 }

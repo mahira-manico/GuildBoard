@@ -23,20 +23,20 @@ public class Quest {
     private Difficulty difficulty;
 
     @Size(min = 1)
-    private int requiredLevel;
+    private Integer requiredLevel;
 
     @Size(min=0)
-    private int goldReward;
+    private Integer goldReward;
 
     @Size(min = 0)
-    private int xpReward;
+    private Integer xpReward;
 
     @Enumerated(EnumType.STRING)
     private Status status;
 
     protected Quest(){}
 
-    public Quest(String title, String description, Difficulty difficulty, int requiredLevel, int goldReward, int xpReward, Status status){
+    public Quest(String title, String description, Difficulty difficulty, Integer requiredLevel, Integer goldReward, Integer xpReward, Status status){
         this.title=title;
         this.description=description;
         this.difficulty=difficulty;
@@ -62,15 +62,15 @@ public class Quest {
         return difficulty;
     }
 
-    public int getGoldReward() {
+    public Integer getGoldReward() {
         return goldReward;
     }
 
-    public int getRequiredLevel() {
+    public Integer getRequiredLevel() {
         return requiredLevel;
     }
 
-    public int getXpReward() {
+    public Integer getXpReward() {
         return xpReward;
     }
 
@@ -90,11 +90,11 @@ public class Quest {
         this.difficulty = difficulty;
     }
 
-    public void setGoldReward(int goldReward) {
+    public void setGoldReward(Integer goldReward) {
         this.goldReward = goldReward;
     }
 
-    public void setRequiredLevel(int requiredLevel) {
+    public void setRequiredLevel(Integer requiredLevel) {
         this.requiredLevel = requiredLevel;
     }
 
@@ -102,7 +102,7 @@ public class Quest {
         this.status = status;
     }
 
-    public void setXpReward(int xpReward) {
+    public void setXpReward(Integer xpReward) {
         this.xpReward = xpReward;
     }
 }
