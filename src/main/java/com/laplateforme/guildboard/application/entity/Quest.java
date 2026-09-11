@@ -36,14 +36,13 @@ public class Quest {
 
     protected Quest(){}
 
-    public Quest(String title, String description, Difficulty difficulty, Integer requiredLevel, Integer goldReward, Integer xpReward, Status status){
+    public Quest(String title, String description, Difficulty difficulty, Integer requiredLevel, Integer goldReward, Integer xpReward){
         this.title=title;
         this.description=description;
         this.difficulty=difficulty;
         this.requiredLevel=requiredLevel;
         this.goldReward=goldReward;
         this.xpReward=xpReward;
-        this.status=status;
     }
 
     public Long getId() {
