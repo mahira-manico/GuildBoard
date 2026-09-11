@@ -90,11 +90,11 @@ public class Quest {
         this.difficulty = difficulty;
     }
 
-    public void setGoldReward(int goldReward) {
+    public void setGoldReward(Integer goldReward) {
         this.goldReward = goldReward;
     }
 
-    public void setRequiredLevel(int requiredLevel) {
+    public void setRequiredLevel(Integer requiredLevel) {
         this.requiredLevel = requiredLevel;
     }
 
@@ -102,7 +102,7 @@ public class Quest {
         this.status = status;
     }
 
-    public void setXpReward(int xpReward) {
+    public void setXpReward(Integer xpReward) {
         this.xpReward = xpReward;
     }
 }
