@@ -6,10 +6,10 @@ import com.laplateforme.guildboard.application.entity.Status;
 import com.laplateforme.guildboard.application.repository.AdventurerRepository;
 import com.laplateforme.guildboard.application.repository.AssignmentRepository;
 import com.laplateforme.guildboard.application.repository.QuestRepository;
-import jakarta.validation.constraints.Null;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -56,5 +56,13 @@ public class AssignmentService {
         q.setStatus(Status.ON_GOING);
         return assignmentRepository.save(addQuest); //return saved new assignment
     }
+
+    public List<Assignment> seeAllQuests(Long adventurer_id){
+        Adventurer adv=adventurerRepository.findById(adventurer_id).orElseThrow(()->new RuntimeException("Adventurer not found!"));
+        List<Assignment> allAssignments = assignmentRepository.findByAdventurer_Id(adventurer_id);
+        return allAssignments;
+    }
+
+
     
 }
