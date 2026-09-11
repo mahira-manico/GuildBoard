@@ -27,11 +27,9 @@ public class Assignment{
 
     protected Assignment(){}
 
-    public Assignment(Adventurer adventurer, Quest quest, LocalDateTime assigned_at, LocalDateTime completed_at){
+    public Assignment(Adventurer adventurer, Quest quest){
         this.adventurer=adventurer;
         this.quest=quest;
-        this.assigned_at=assigned_at;
-        this.completed_at=completed_at;
     }
 
     public Long getId() {
