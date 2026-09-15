@@ -1,6 +1,6 @@
 package com.laplateforme.guildboard.application.service;
-import com.laplateforme.guildboard.application.dto.QuestRequest;
-import com.laplateforme.guildboard.application.dto.QuestResponse;
+import com.laplateforme.guildboard.application.dto.QuestRequestDTO;
+import com.laplateforme.guildboard.application.dto.QuestAnswerDTO;
 import com.laplateforme.guildboard.application.entity.*;
 import com.laplateforme.guildboard.application.repository.AdventurerRepository;
 import com.laplateforme.guildboard.application.repository.AssignmentRepository;
@@ -23,9 +23,9 @@ public class QuestService {
         this.adventurerRepository = adventurerRepository;
     }
 
-    public List<QuestResponse> findByStatus(Status status){
+    public List<QuestAnswerDTO> findByStatus(Status status){
         return questRepository.findByStatus(status).stream().map(quest ->
-                new QuestResponse(
+                new QuestAnswerDTO(
                         quest.getId(),
                         quest.getTitle(),
                         quest.getDescription(),
@@ -37,9 +37,9 @@ public class QuestService {
 
     }
 
-    public List<QuestResponse> findByDifficulty(Difficulty difficulty){
+    public List<QuestAnswerDTO> findByDifficulty(Difficulty difficulty){
         return questRepository.findByDifficulty(difficulty).stream().map(quest ->
-                new QuestResponse(
+                new QuestAnswerDTO(
                         quest.getId(),
                         quest.getTitle(),
                         quest.getDescription(),
@@ -50,9 +50,9 @@ public class QuestService {
                         quest.getStatus())).toList();
     }
 
-    public List<QuestResponse> seeAllQuests(){
+    public List<QuestAnswerDTO> seeAllQuests(){
        return questRepository.findAll().stream().map(quest ->
-               new QuestResponse(
+               new QuestAnswerDTO(
                        quest.getId(),
                        quest.getTitle(),
                        quest.getDescription(),
@@ -64,7 +64,7 @@ public class QuestService {
 
     }
 
-    public List<QuestResponse> filterBy(Status status, Difficulty difficulty){
+    public List<QuestAnswerDTO> filterBy(Status status, Difficulty difficulty){
         if(status!=null && difficulty==null){
             return findByStatus(status);
         } else if (status==null && difficulty!=null) {
@@ -74,9 +74,9 @@ public class QuestService {
     }
 
 
-    public QuestResponse seeQuest(Long id){
+    public QuestAnswerDTO seeQuest(Long id){
         Quest quest=questRepository.findById(id).orElseThrow(()->new RuntimeException("Quest not found!"));
-        return new QuestResponse(
+        return new QuestAnswerDTO(
                 quest.getId(),
                 quest.getTitle(),
                 quest.getDescription(),
@@ -87,26 +87,26 @@ public class QuestService {
                 quest.getStatus());
     }
 
-    public QuestResponse createQuest(QuestRequest questRequest){
-        if (questRequest.title()==null||questRequest.title().trim().isEmpty()){
+    public QuestAnswerDTO createQuest(QuestRequestDTO questRequestDTO){
+        if (questRequestDTO.title()==null|| questRequestDTO.title().trim().isEmpty()){
             throw new RuntimeException("Quest title is required!");
         }
-        if (questRequest.description()==null||questRequest.description().length()>500||questRequest.description().length()<10){
+        if (questRequestDTO.description()==null|| questRequestDTO.description().length()>500|| questRequestDTO.description().length()<10){
             throw new RuntimeException("Text length must be between 10 and 500 characters!");
         }
 
-        if (questRequest.requiredLevel()<1){
+        if (questRequestDTO.requiredLevel()<1){
             throw new RuntimeException("Level must be 1 minimum!");
         }
 
-        if(questRequest.xpReward()<0){
+        if(questRequestDTO.xpReward()<0){
             throw new RuntimeException("Xp gains must be positive!");
         }
 
-        Quest createAQuest=new Quest(questRequest.title(), questRequest.description(), questRequest.difficulty(), questRequest.requiredLevel(), questRequest.goldReward(), questRequest.xpReward());
+        Quest createAQuest=new Quest(questRequestDTO.title(), questRequestDTO.description(), questRequestDTO.difficulty(), questRequestDTO.requiredLevel(), questRequestDTO.goldReward(), questRequestDTO.xpReward());
         createAQuest.setStatus(Status.AVAILABLE);
         Quest savedQuest=questRepository.save(createAQuest);
-        return new QuestResponse(savedQuest.getId(), savedQuest.getTitle(), savedQuest.getDescription(), savedQuest.getDifficulty(), savedQuest.getRequiredLevel(), savedQuest.getGoldReward(), savedQuest.getXpReward(), savedQuest.getStatus());
+        return new QuestAnswerDTO(savedQuest.getId(), savedQuest.getTitle(), savedQuest.getDescription(), savedQuest.getDifficulty(), savedQuest.getRequiredLevel(), savedQuest.getGoldReward(), savedQuest.getXpReward(), savedQuest.getStatus());
     }
 
     public void deleteQuest(Long id){
@@ -118,23 +118,23 @@ public class QuestService {
         questRepository.delete(quest);
     }
 
-    public QuestResponse updateQuest(Long id, QuestRequest questRequest){
+    public QuestAnswerDTO updateQuest(Long id, QuestRequestDTO questRequestDTO){
 
         Quest currentQuest=questRepository.findById(id).orElseThrow(()->new RuntimeException("Quest not found!"));
         if(currentQuest.getStatus()!=Status.AVAILABLE){
             throw new RuntimeException("Quest cannot be modified if already chosen");
         }
 
-        currentQuest.setTitle(questRequest.title());
-        currentQuest.setDescription(questRequest.description());
-        currentQuest.setDifficulty(questRequest.difficulty());
-        currentQuest.setRequiredLevel(questRequest.requiredLevel());
-        currentQuest.setGoldReward(questRequest.goldReward());
-        currentQuest.setStatus(questRequest.status());
+        currentQuest.setTitle(questRequestDTO.title());
+        currentQuest.setDescription(questRequestDTO.description());
+        currentQuest.setDifficulty(questRequestDTO.difficulty());
+        currentQuest.setRequiredLevel(questRequestDTO.requiredLevel());
+        currentQuest.setGoldReward(questRequestDTO.goldReward());
+        currentQuest.setStatus(questRequestDTO.status());
 
         questRepository.save(currentQuest);
 
-        return new QuestResponse(
+        return new QuestAnswerDTO(
                 currentQuest.getId(),
                 currentQuest.getTitle(),
                 currentQuest.getDescription(),
@@ -145,9 +145,9 @@ public class QuestService {
                 currentQuest.getStatus());
     }
 
-    public QuestResponse completeQuest(Long quest_id){
-        Optional<Assignment> assignment=assignmentRepository.findByQuest_IdAndCompleted_atIsNull(quest_id);
-        assignment.get(). setCompleted_at(LocalDateTime.now());
+    public QuestAnswerDTO completeQuest(Long quest_id){
+        Optional<Assignment> assignment=assignmentRepository.findByQuestIdAndCompletedAtIsNull(quest_id);
+        assignment.get().setCompletedAt(LocalDateTime.now());
         assignmentRepository.save(assignment.get());
 
        Adventurer adventurer=assignment.get().getAdventurer();
@@ -166,7 +166,7 @@ public class QuestService {
 
         quest.setStatus(Status.COMPLETED);
         Quest completedQuest=questRepository.save(quest);
-        return new QuestResponse(
+        return new QuestAnswerDTO(
                 completedQuest.getId(),
                 completedQuest.getTitle(),
                 completedQuest.getDescription(),

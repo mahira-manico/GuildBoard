@@ -6,7 +6,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
 
-public record QuestRequest(
+public record QuestRequestDTO(
         @NotBlank(message = "Title can't be empty")
         @Size(min = 5, max=500, message = "5 characters minimum and 500 max!")
         String title,

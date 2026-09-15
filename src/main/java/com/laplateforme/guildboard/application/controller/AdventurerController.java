@@ -3,6 +3,10 @@ package com.laplateforme.guildboard.application.controller;
 import java.util.List;
 import java.util.Optional;
 
+import com.laplateforme.guildboard.application.dto.AssignmentAnswerDTO;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +22,7 @@ import com.laplateforme.guildboard.application.dto.AdventurerRequestDTO;
 import com.laplateforme.guildboard.application.service.AdventurerService;
 
 @RestController
-@RequestMapping("/adventurers")
+@RequestMapping("/api/adventurers")
 public class AdventurerController {
 
     private final AdventurerService adventurerService;
@@ -29,36 +33,39 @@ public class AdventurerController {
 
     // Get all adventurers
     @GetMapping
-    public List<AdventurerAnswerDTO> getAllAdventurers() {
-        return adventurerService.getAllAdventurers();
+    public ResponseEntity<List<AdventurerAnswerDTO>> getAllAdventurers() {
+        return ResponseEntity.ok(adventurerService.getAllAdventurers());
     }
 
     // Get an adventurer by ID
     @GetMapping("/{id}")
-    public Optional<AdventurerAnswerDTO> getAdventurerById(@PathVariable Long id) {
-        return adventurerService.getAdventurerById(id);
+    public ResponseEntity<Optional<AdventurerAnswerDTO>> getAdventurerById(@PathVariable Long id) {
+        return ResponseEntity.ok(adventurerService.getAdventurerById(id));
     }
 
     // Create a new adventurer
     @PostMapping
-    public AdventurerAnswerDTO createAdventurer(
-            @RequestBody AdventurerRequestDTO request) {
-
-        return adventurerService.createAdventurer(request);
+    public ResponseEntity<AdventurerAnswerDTO> createAdventurer(@RequestBody @Valid AdventurerRequestDTO request) {
+        AdventurerAnswerDTO created=adventurerService.createAdventurer(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     // Update an adventurer
     @PutMapping("/{id}")
-    public AdventurerAnswerDTO updateAdventurer(
-            @PathVariable Long id,
-            @RequestBody AdventurerRequestDTO request) {
-
-        return adventurerService.updateAdventurer(id, request);
+    public ResponseEntity<AdventurerAnswerDTO> updateAdventurer(@PathVariable Long id, @RequestBody @Valid AdventurerRequestDTO request) {
+        AdventurerAnswerDTO updated= adventurerService.updateAdventurer(id, request);
+        return ResponseEntity.ok(updated);
     }
 
     // Delete an adventurer
     @DeleteMapping("/{id}")
-    public void deleteAdventurer(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteAdventurer(@PathVariable Long id) {
         adventurerService.deleteAdventurer(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/history")
+    public ResponseEntity<List<AssignmentAnswerDTO>> getAdventurerHistory(@PathVariable Long id){
+        return ResponseEntity.ok(adventurerService.getAdventurerHistory(id));
     }
 }

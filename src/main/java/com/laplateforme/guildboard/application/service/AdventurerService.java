@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.laplateforme.guildboard.application.dto.AssignmentAnswerDTO;
+import com.laplateforme.guildboard.application.entity.Assignment;
+import com.laplateforme.guildboard.application.repository.AssignmentRepository;
 import org.springframework.stereotype.Service;
 
 import com.laplateforme.guildboard.application.dto.AdventurerAnswerDTO;
@@ -16,9 +19,11 @@ import com.laplateforme.guildboard.application.repository.AdventurerRepository;
 public class AdventurerService {
 
     private final AdventurerRepository adventurerRepository;
+    private final AssignmentRepository assignmentRepository;
 
-    public AdventurerService(AdventurerRepository adventurerRepository) {
+    public AdventurerService(AdventurerRepository adventurerRepository, AssignmentRepository assignmentRepository) {
         this.adventurerRepository = adventurerRepository;
+        this.assignmentRepository = assignmentRepository;
     }
 
     // Get all adventurers
@@ -109,5 +114,15 @@ public class AdventurerService {
         dto.setGold(adventurer.getGold());
 
         return dto;
+    }
+
+    public List<AssignmentAnswerDTO> getAdventurerHistory(Long id) {
+        return assignmentRepository.findByAdventurer_Id(id).stream()
+                .map(assignment -> new AssignmentAnswerDTO(
+                        assignment.getId(),
+                        assignment.getAdventurer().getId(),
+                        assignment.getQuest().getId(),
+                        assignment.getAssignedAt(),
+                        assignment.getCompletedAt())).toList();
     }
 }

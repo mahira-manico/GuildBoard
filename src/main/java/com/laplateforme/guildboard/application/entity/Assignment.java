@@ -22,8 +22,8 @@ public class Assignment{
     @JoinColumn(name = "quest_id", nullable = false)
     private Quest quest;
 
-    private LocalDateTime assigned_at;
-    private LocalDateTime completed_at;
+    private LocalDateTime assignedAt;
+    private LocalDateTime completedAt;
 
     protected Assignment(){}
 
@@ -56,19 +56,19 @@ public class Assignment{
         this.quest = quest;
     }
 
-    public LocalDateTime getAssigned_at() {
-        return assigned_at;
+    public LocalDateTime getAssignedAt() {
+        return assignedAt;
     }
 
-    public void setAssigned_at(LocalDateTime assigned_at) {
-        this.assigned_at = assigned_at;
+    public void setAssignedAt(LocalDateTime assignedAt) {
+        this.assignedAt = assignedAt;
     }
 
-    public LocalDateTime getCompleted_at() {
-        return completed_at;
+    public LocalDateTime getCompletedAt() {
+        return completedAt;
     }
 
-    public void setCompleted_at(LocalDateTime completed_at) {
-        this.completed_at = completed_at;
+    public void setCompletedAt(LocalDateTime completedAt) {
+        this.completedAt = completedAt;
     }
 }

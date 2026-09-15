@@ -1,5 +1,5 @@
 package com.laplateforme.guildboard.application.service;
-import com.laplateforme.guildboard.application.dto.AssigmentResponse;
+import com.laplateforme.guildboard.application.dto.AssignmentAnswerDTO;
 import com.laplateforme.guildboard.application.entity.Adventurer;
 import com.laplateforme.guildboard.application.entity.Assignment;
 import com.laplateforme.guildboard.application.entity.Quest;
@@ -29,13 +29,13 @@ public class AssignmentService {
 
     //Method to create an assignation entity between a quest and an adventurer
     @Transactional
-    public AssigmentResponse assignQuest(Long adventurer_id, Long quest_id) {
+    public AssignmentAnswerDTO assignQuest(Long adventurer_id, Long quest_id) {
         Adventurer adv = adventurerRepository.findById(adventurer_id).orElseThrow(() -> new RuntimeException("Adventurer not found!")); //get selected id and throw a message error
         Quest q = questRepository.findById(quest_id).orElseThrow(() -> new RuntimeException("Quest not found!"));
         List<Assignment> assignmentsForAdv = assignmentRepository.findByAdventurer_Id(adventurer_id);
 
         for (Assignment a : assignmentsForAdv) { //Take all assignment elements in list
-            if (a.getCompleted_at() == null) { //Verify if none of the assignments completions is null
+            if (a.getCompletedAt() == null) { //Verify if none of the assignments completions is null
                 throw new RuntimeException("A quest is already in progress! Can't add a new one!");
             }
         }
@@ -47,18 +47,18 @@ public class AssignmentService {
             throw new RuntimeException("Level too low for quest!");
         }
         Assignment addQuest = new Assignment(adv, q); //If all verification are ok create a new assignation
-        addQuest.setAssigned_at(LocalDateTime.now()); //set datetime to now and completed at null
-        addQuest.setCompleted_at(null);
+        addQuest.setAssignedAt(LocalDateTime.now()); //set datetime to now and completed at null
+        addQuest.setCompletedAt(null);
         q.setStatus(Status.ON_GOING);
         assignmentRepository.save(addQuest); //return saved new assignment
         questRepository.save(q);
 
-        return new AssigmentResponse(
+        return new AssignmentAnswerDTO(
                 addQuest.getId(),
                 addQuest.getAdventurer().getId(),
                 addQuest.getQuest().getId(),
-                addQuest.getAssigned_at(),
-                addQuest.getCompleted_at()
+                addQuest.getAssignedAt(),
+                addQuest.getCompletedAt()
         );
     }
 

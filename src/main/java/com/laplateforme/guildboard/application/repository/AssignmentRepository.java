@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface
 AssignmentRepository extends JpaRepository<Assignment, Long> {
     List<Assignment> findByAdventurer_Id(Long adventurer_id);
-    Optional<Assignment> findByQuest_IdAndCompleted_atIsNull(Long quest_id);
+    Optional<Assignment> findByQuestIdAndCompletedAtIsNull(Long quest_id);
 
 }
 

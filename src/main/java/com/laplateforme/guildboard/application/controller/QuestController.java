@@ -1,8 +1,8 @@
 package com.laplateforme.guildboard.application.controller;
-import com.laplateforme.guildboard.application.dto.AssigmentResponse;
-import com.laplateforme.guildboard.application.dto.AssignmentRequest;
-import com.laplateforme.guildboard.application.dto.QuestRequest;
-import com.laplateforme.guildboard.application.dto.QuestResponse;
+import com.laplateforme.guildboard.application.dto.AssignmentAnswerDTO;
+import com.laplateforme.guildboard.application.dto.AssignmentRequestDTO;
+import com.laplateforme.guildboard.application.dto.QuestRequestDTO;
+import com.laplateforme.guildboard.application.dto.QuestAnswerDTO;
 import com.laplateforme.guildboard.application.entity.Difficulty;
 import com.laplateforme.guildboard.application.entity.Status;
 import com.laplateforme.guildboard.application.service.AssignmentService;
@@ -28,22 +28,22 @@ public class QuestController {
 
     //See a quest
     @GetMapping("/{id}")
-    public ResponseEntity<QuestResponse> seeQuest(@PathVariable Long id){
-        QuestResponse quest=questService.seeQuest(id);
+    public ResponseEntity<QuestAnswerDTO> seeQuest(@PathVariable Long id){
+        QuestAnswerDTO quest=questService.seeQuest(id);
         return ResponseEntity.ok(quest);
     }
 
     //Create a quest
     @PostMapping
-    public ResponseEntity<QuestResponse> createQuest(@Valid @RequestBody QuestRequest request){
-        QuestResponse quest=questService.createQuest(request);
+    public ResponseEntity<QuestAnswerDTO> createQuest(@Valid @RequestBody QuestRequestDTO request){
+        QuestAnswerDTO quest=questService.createQuest(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(quest);
     }
 
     //Update a quest
     @PutMapping("/{id}")
-    public ResponseEntity<QuestResponse> updateQuest(@PathVariable Long id, @RequestBody QuestRequest request){
-        QuestResponse quest=questService.updateQuest(id, request);
+    public ResponseEntity<QuestAnswerDTO> updateQuest(@PathVariable Long id, @RequestBody QuestRequestDTO request){
+        QuestAnswerDTO quest=questService.updateQuest(id, request);
         return ResponseEntity.ok(quest);
     }
 
@@ -56,22 +56,22 @@ public class QuestController {
 
     //Create assignment
     @PostMapping("/{id}/assignment")
-    public ResponseEntity<AssigmentResponse> assignQuest(@PathVariable Long id, @ Valid @RequestBody AssignmentRequest request){
-        AssigmentResponse assignment=assignmentService.assignQuest(request.adventurer_id(), id);
+    public ResponseEntity<AssignmentAnswerDTO> assignQuest(@PathVariable Long id, @ Valid @RequestBody AssignmentRequestDTO request){
+        AssignmentAnswerDTO assignment=assignmentService.assignQuest(request.adventurer_id(), id);
         return ResponseEntity.status(HttpStatus.CREATED).body(assignment);
 
     }
 
     //See and filter all quests
     @GetMapping
-    public ResponseEntity<List<QuestResponse>> seeAllQuests(@RequestParam(required = false)Status status, @RequestParam(required = false)Difficulty difficulty){
+    public ResponseEntity<List<QuestAnswerDTO>> seeAllQuests(@RequestParam(required = false)Status status, @RequestParam(required = false)Difficulty difficulty){
      return ResponseEntity.ok(questService.filterBy(status, difficulty));
     }
 
     //Complete a quest
     @PostMapping("{id}/completion")
-    public  ResponseEntity<QuestResponse> completeQuest(@PathVariable Long id){
-        QuestResponse quest=questService.completeQuest(id);
+    public  ResponseEntity<QuestAnswerDTO> completeQuest(@PathVariable Long id){
+        QuestAnswerDTO quest=questService.completeQuest(id);
         return ResponseEntity.ok(quest);
     }
 
