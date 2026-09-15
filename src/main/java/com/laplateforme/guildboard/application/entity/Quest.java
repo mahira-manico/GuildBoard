@@ -1,7 +1,6 @@
 package com.laplateforme.guildboard.application.entity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 @Entity
 public class Quest {
@@ -22,15 +21,17 @@ public class Quest {
     @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
 
-    @Size(min = 1)
+    @Min(1)
     private Integer requiredLevel;
 
-    @Size(min=0)
+    @Min(0)
     private Integer goldReward;
 
-    @Size(min = 0)
+    @Min(0)
+    @Positive
     private Integer xpReward;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Status status;
 

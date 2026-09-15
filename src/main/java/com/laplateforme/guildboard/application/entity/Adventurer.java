@@ -1,6 +1,8 @@
 package com.laplateforme.guildboard.application.entity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -15,16 +17,17 @@ public class Adventurer {
     @Size(min=2, max=50)
     private String name;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private CharacterClass characterClass;
 
-    @Size(min=1)
+    @Min(1)
     private Integer level;
 
-    @Size(min=0)
+    @Min(0)
     private Integer xp;
 
-    @Size(min=0)
+    @Min(0)
     private Integer gold;
 
     protected Adventurer(){}

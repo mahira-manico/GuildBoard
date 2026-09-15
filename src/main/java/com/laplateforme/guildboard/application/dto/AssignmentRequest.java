@@ -1,4 +1,8 @@
 package com.laplateforme.guildboard.application.dto;
 
-public record AssignmentRequest(Long id) {
+import jakarta.validation.constraints.NotNull;
+
+public record AssignmentRequest(
+        @NotNull(message = "Adventurer id is required")
+        Long adventurer_id) {
 }
