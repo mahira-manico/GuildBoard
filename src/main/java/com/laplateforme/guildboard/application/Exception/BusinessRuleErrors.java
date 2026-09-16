@@ -1,7 +1,7 @@
 package com.laplateforme.guildboard.application.Exception;
 
 public class BusinessRuleErrors extends RuntimeException{
-    private String code;
+    private final String code;
     private String message;
 
     public BusinessRuleErrors(String code, String message){

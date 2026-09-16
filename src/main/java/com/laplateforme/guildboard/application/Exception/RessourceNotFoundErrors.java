@@ -2,7 +2,7 @@ package com.laplateforme.guildboard.application.Exception;
 
 public class RessourceNotFoundErrors extends RuntimeException {
 
-    private String code;
+    private final String code;
     private String message;
 
     public RessourceNotFoundErrors(String code, String message) {
