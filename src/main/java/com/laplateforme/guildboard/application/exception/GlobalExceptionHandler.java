@@ -5,11 +5,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+//Generalized Annotation for REST errors management
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BusinessRuleErrors.class)
-    public ResponseEntity<ApiErrorDTO>BusinessRuleError(BusinessRuleErrors errors){
+    //Use Business rules class and handle 422 errors
+    @ExceptionHandler(BusinessRuleException.class)
+    public ResponseEntity<ApiErrorDTO>BusinessRuleError(BusinessRuleException errors){
         ApiErrorDTO errorDTO=new ApiErrorDTO(
                 HttpStatus.UNPROCESSABLE_CONTENT.value(),
                 errors.getCode(),
@@ -17,8 +19,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(errorDTO);
     }
 
-    @ExceptionHandler(RessourceNotFoundErrors.class)
-    public ResponseEntity<ApiErrorDTO>RessourceNotFoundError(RessourceNotFoundErrors errors){
+    //Use Ressources rules class and handle 404 errors
+    @ExceptionHandler(RessourceNotFoundException.class)
+    public ResponseEntity<ApiErrorDTO>RessourceNotFoundError(RessourceNotFoundException errors){
         ApiErrorDTO errorDTO=new ApiErrorDTO(
                 HttpStatus.NOT_FOUND.value(),
                 errors.getCode(),
@@ -26,6 +29,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDTO);
     }
 
+    //Used in DTO and Controller by using @Valid annotation, handle 400 errors
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiErrorDTO>ArgumentNotValidError(MethodArgumentNotValidException exception){
 
@@ -40,6 +44,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDTO);
     }
 
+    //Handle all Exceptions
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorDTO>ExceptionHandler(Exception exception){
         ApiErrorDTO errorDTO=new ApiErrorDTO(

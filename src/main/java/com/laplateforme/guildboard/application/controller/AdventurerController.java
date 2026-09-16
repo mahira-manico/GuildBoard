@@ -1,8 +1,6 @@
 package com.laplateforme.guildboard.application.controller;
 
 import java.util.List;
-import java.util.Optional;
-
 import com.laplateforme.guildboard.application.dto.AssignmentAnswerDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -22,7 +20,7 @@ import com.laplateforme.guildboard.application.dto.AdventurerRequestDTO;
 import com.laplateforme.guildboard.application.service.AdventurerService;
 
 @RestController
-@RequestMapping("/api/adventurers")
+@RequestMapping("/api/adventurers") //Define https path
 public class AdventurerController {
 
     private final AdventurerService adventurerService;
@@ -32,14 +30,14 @@ public class AdventurerController {
     }
 
     // Get all adventurers
-    @GetMapping
+    @GetMapping //Get method
     public ResponseEntity<List<AdventurerAnswerDTO>> getAllAdventurers() {
         return ResponseEntity.ok(adventurerService.getAllAdventurers());
     }
 
     // Get an adventurer by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<AdventurerAnswerDTO>> getAdventurerById(@PathVariable Long id) {
+    public ResponseEntity<AdventurerAnswerDTO> getAdventurerById(@PathVariable Long id) {
         return ResponseEntity.ok(adventurerService.getAdventurerById(id));
     }
 

@@ -1,11 +1,12 @@
 package com.laplateforme.guildboard.application.exception;
 
-public class RessourceNotFoundErrors extends RuntimeException {
+//Class handling missing ressources error, inherit of RunTimeException
+public class RessourceNotFoundException extends RuntimeException {
 
     private final String code;
     private String message;
 
-    public RessourceNotFoundErrors(String code, String message) {
+    public RessourceNotFoundException(String code, String message) {
         super(message);
         this.code=code;
     }

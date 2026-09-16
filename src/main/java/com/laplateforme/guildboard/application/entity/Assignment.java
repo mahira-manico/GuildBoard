@@ -13,7 +13,7 @@ public class Assignment{
     private Long id;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne //Precise the link between key and foreign key
     @JoinColumn(name = "adventurer_id", nullable = false)
     private Adventurer adventurer;
 

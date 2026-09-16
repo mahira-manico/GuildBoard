@@ -2,11 +2,12 @@ package com.laplateforme.guildboard.application.service;
 import com.laplateforme.guildboard.application.dto.QuestRequestDTO;
 import com.laplateforme.guildboard.application.dto.QuestAnswerDTO;
 import com.laplateforme.guildboard.application.entity.*;
-import com.laplateforme.guildboard.application.exception.BusinessRuleErrors;
-import com.laplateforme.guildboard.application.exception.RessourceNotFoundErrors;
+import com.laplateforme.guildboard.application.exception.BusinessRuleException;
+import com.laplateforme.guildboard.application.exception.RessourceNotFoundException;
 import com.laplateforme.guildboard.application.repository.AdventurerRepository;
 import com.laplateforme.guildboard.application.repository.AssignmentRepository;
 import com.laplateforme.guildboard.application.repository.QuestRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ public class QuestService {
         this.adventurerRepository = adventurerRepository;
     }
 
+    //Filter all quests by status
     public List<QuestAnswerDTO> findByStatus(Status status){
         return questRepository.findByStatus(status).stream().map(quest ->
                 new QuestAnswerDTO(
@@ -39,6 +41,7 @@ public class QuestService {
 
     }
 
+    //Filter all quests by difficulty
     public List<QuestAnswerDTO> findByDifficulty(Difficulty difficulty){
         return questRepository.findByDifficulty(difficulty).stream().map(quest ->
                 new QuestAnswerDTO(
@@ -52,6 +55,7 @@ public class QuestService {
                         quest.getStatus())).toList();
     }
 
+    //See all quests
     public List<QuestAnswerDTO> seeAllQuests(){
        return questRepository.findAll().stream().map(quest ->
                new QuestAnswerDTO(
@@ -66,6 +70,7 @@ public class QuestService {
 
     }
 
+    //Method to filter quests using the three methods above
     public List<QuestAnswerDTO> filterBy(Status status, Difficulty difficulty){
         if(status!=null && difficulty==null){
             return findByStatus(status);
@@ -75,9 +80,10 @@ public class QuestService {
         else return seeAllQuests();
     }
 
-
+    //Method to see a quest using its ID
     public QuestAnswerDTO seeQuest(Long id){
-        Quest quest=questRepository.findById(id).orElseThrow(()->new RessourceNotFoundErrors("QUEST_NOT_FOUND","Quête non trouvé à l'id : "+id));
+        Quest quest=questRepository.findById(id)
+                .orElseThrow(()->new RessourceNotFoundException("QUEST_NOT_FOUND","Quête non trouvé à l'id : "+id)); //Error Handling
         return new QuestAnswerDTO(
                 quest.getId(),
                 quest.getTitle(),
@@ -89,6 +95,7 @@ public class QuestService {
                 quest.getStatus());
     }
 
+    @Transactional //Use of transactional for methods who modify a table for better protection
     public QuestAnswerDTO createQuest(QuestRequestDTO questRequestDTO){
 
         Quest createAQuest=new Quest(
@@ -114,21 +121,27 @@ public class QuestService {
                 savedQuest.getStatus());
     }
 
+    //Method to delete a quest
+    @Transactional
     public void deleteQuest(Long id){
 
-        Quest quest=questRepository.findById(id).orElseThrow(()->new RessourceNotFoundErrors("QUEST_NOT_FOUND","La quête est introuvable avec l'id : "+id));
+        Quest quest=questRepository.findById(id)
+                .orElseThrow(()->new RessourceNotFoundException("QUEST_NOT_FOUND","La quête est introuvable avec l'id : "+id));
 
         if(quest.getStatus()==Status.ON_GOING){
-            throw new BusinessRuleErrors("QUEST_NOT_DONE","Une quête en cours ne peut pas être supprimé!");
+            throw new BusinessRuleException("QUEST_NOT_DONE","Une quête en cours ne peut pas être supprimé!");
         }
         questRepository.delete(quest);
     }
 
+
+    //Method to update a quest
+    @Transactional
     public QuestAnswerDTO updateQuest(Long id, QuestRequestDTO questRequestDTO){
 
-        Quest currentQuest=questRepository.findById(id).orElseThrow(()->new RessourceNotFoundErrors("QUEST_NOT_FOUND","La quête est introuvable avec l'id : "+id));
+        Quest currentQuest=questRepository.findById(id).orElseThrow(()->new RessourceNotFoundException("QUEST_NOT_FOUND","La quête est introuvable avec l'id : "+id));
         if(currentQuest.getStatus()!=Status.AVAILABLE){
-            throw new BusinessRuleErrors("QUEST_ON_GOING","Une quête en cours ne peut être modifié!");
+            throw new BusinessRuleException("QUEST_ON_GOING","Une quête en cours ne peut être modifié!");
         }
 
         currentQuest.setTitle(questRequestDTO.title());
@@ -151,16 +164,28 @@ public class QuestService {
                 currentQuest.getStatus());
     }
 
+    //Method to complete a quest
+    @Transactional
     public QuestAnswerDTO completeQuest(Long quest_id){
-        Optional<Assignment> assignment=assignmentRepository.findByQuestIdAndCompletedAtIsNull(quest_id);
-        assignment.get().setCompletedAt(LocalDateTime.now());
-        assignmentRepository.save(assignment.get());
 
-       Adventurer adventurer=assignment.get().getAdventurer();
-       Quest quest=assignment.get().getQuest();
-       adventurer.setGold(adventurer.getGold()+quest.getGoldReward());
-       int currentXp= adventurer.getXp()+quest.getXpReward();
-       int currentLevel=adventurer.getLevel();
+        Quest existingQuest=questRepository.findById(quest_id)
+                .orElseThrow(()->new RessourceNotFoundException("QUEST_NOT_FOUND","Quête non trouvé avec l'id : "+quest_id)); //Check if ressources exists
+
+        if(existingQuest.getStatus()!=Status.ON_GOING){
+            throw new BusinessRuleException("QUEST_NOT_ON_GOING","La quête n'est pas en cours!");
+        }
+
+        Assignment assignment=assignmentRepository.findByQuestIdAndCompletedAtIsNull(quest_id)
+                .orElseThrow(()->new RessourceNotFoundException("ASSIGNMENT_NOT_FOUND","l'assignation n'existe pas"));
+
+        assignment.setCompletedAt(LocalDateTime.now());
+        assignmentRepository.save(assignment);
+
+        Adventurer adventurer=assignment.getAdventurer();
+        adventurer.setGold(adventurer.getGold()+existingQuest.getGoldReward());
+
+        int currentXp= adventurer.getXp()+existingQuest.getXpReward();
+        int currentLevel=adventurer.getLevel();
 
         while (currentXp >= currentLevel * 100) {
             currentXp -= currentLevel * 100;
@@ -170,8 +195,10 @@ public class QuestService {
         adventurer.setLevel(currentLevel);
         adventurerRepository.save(adventurer);
 
-        quest.setStatus(Status.COMPLETED);
-        Quest completedQuest=questRepository.save(quest);
+        existingQuest.setStatus(Status.COMPLETED);
+
+        Quest completedQuest=questRepository.save(existingQuest);
+
         return new QuestAnswerDTO(
                 completedQuest.getId(),
                 completedQuest.getTitle(),

@@ -1,10 +1,11 @@
 package com.laplateforme.guildboard.application.exception;
 
-public class BusinessRuleErrors extends RuntimeException{
+//Class for Business rules infractions, inherit of runtimeException
+public class BusinessRuleException extends RuntimeException{
     private final String code;
     private String message;
 
-    public BusinessRuleErrors(String code, String message){
+    public BusinessRuleException(String code, String message){
         super(message);
         this.code=code;
     }

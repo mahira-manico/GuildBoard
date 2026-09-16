@@ -6,7 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
+//Interface Quest inheriting of JpaRepository
 public interface QuestRepository extends JpaRepository<Quest, Long> {
-    List<Quest> findByStatus(Status status);
-    List<Quest> findByDifficulty(Difficulty difficulty);
+    List<Quest> findByStatus(Status status); //Custom method to find a list of quest by status
+    List<Quest> findByDifficulty(Difficulty difficulty); //Custom method to find a list of quest by his difficulty
 }

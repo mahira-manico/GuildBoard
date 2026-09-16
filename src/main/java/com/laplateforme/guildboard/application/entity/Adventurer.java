@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+//Entity class using entity annotation to write SQL using java
 @Entity
 public class Adventurer {
 
@@ -12,8 +13,8 @@ public class Adventurer {
     @GeneratedValue
     private Long id;
 
-    @NotBlank
-    @Column(unique = true, length=50, nullable = false)
+    @NotBlank //Bean Validation to check if name is not empty
+    @Column(unique = true, length=50, nullable = false) //Entity validation
     @Size(min=2, max=50)
     private String name;
 
@@ -40,6 +41,7 @@ public class Adventurer {
         this.gold=0;
     }
 
+    //Getters and Setters
     public Long getId(){
         return id;
     }

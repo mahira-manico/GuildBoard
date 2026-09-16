@@ -2,8 +2,9 @@ package com.laplateforme.guildboard.application.service;
 import java.util.ArrayList;
 import java.util.List;
 import com.laplateforme.guildboard.application.dto.AssignmentAnswerDTO;
-import com.laplateforme.guildboard.application.exception.RessourceNotFoundErrors;
+import com.laplateforme.guildboard.application.exception.RessourceNotFoundException;
 import com.laplateforme.guildboard.application.repository.AssignmentRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import com.laplateforme.guildboard.application.dto.AdventurerAnswerDTO;
 import com.laplateforme.guildboard.application.dto.AdventurerRequestDTO;
@@ -47,7 +48,7 @@ public class AdventurerService {
     public AdventurerAnswerDTO getAdventurerById(Long id) {
 
         Adventurer adventurer = adventurerRepository.findById(id)
-                        .orElseThrow(()->new RessourceNotFoundErrors("ADVENTURER_NOT_FOUND","Aventurier non trouvable avec l'id : "+id));
+                        .orElseThrow(()->new RessourceNotFoundException("ADVENTURER_NOT_FOUND","Aventurier non trouvable avec l'id : "+id));
         return new AdventurerAnswerDTO(
                 adventurer.getId(),
                 adventurer.getName(),
@@ -58,6 +59,7 @@ public class AdventurerService {
     }
 
     // Create a new adventurer
+    @Transactional
     public AdventurerAnswerDTO createAdventurer(AdventurerRequestDTO request) {
 
         Adventurer adventurer = new Adventurer(
@@ -77,9 +79,10 @@ public class AdventurerService {
     }
 
     // Update an adventurer
+    @Transactional
     public AdventurerAnswerDTO updateAdventurer(Long id, AdventurerRequestDTO request) {
 
-        Adventurer adventurer = adventurerRepository.findById(id).orElseThrow(()->new RessourceNotFoundErrors("ADVENTURER_NOT_FOUND","Aventurier non trouvé à l'id"+id));
+        Adventurer adventurer = adventurerRepository.findById(id).orElseThrow(()->new RessourceNotFoundException("ADVENTURER_NOT_FOUND","Aventurier non trouvé à l'id"+id));
 
             adventurer.setName(request.name());
             adventurer.setCharacterClass(request.characterClass());
@@ -97,12 +100,16 @@ public class AdventurerService {
     }
 
     // Delete an adventurer
+    @Transactional
     public void deleteAdventurer(Long id) {
-        adventurerRepository.findById(id).orElseThrow(()->new RessourceNotFoundErrors("ADVENTURER_NOT_FOUND","Aventurier non trouvé à l'id : "+id));
+        adventurerRepository.findById(id)
+                .orElseThrow(()->new RessourceNotFoundException("ADVENTURER_NOT_FOUND","Aventurier non trouvé à l'id : "+id));
+
         adventurerRepository.deleteById(id);
     }
 
     //See an adventurer history
+    @Transactional
     public List<AssignmentAnswerDTO> getAdventurerHistory(Long id) {
         return assignmentRepository.findByAdventurer_Id(id).stream()
                 .map(assignment -> new AssignmentAnswerDTO(
