@@ -19,6 +19,7 @@ public class Quest {
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @NotNull
     private Difficulty difficulty;
 
     @Min(1)

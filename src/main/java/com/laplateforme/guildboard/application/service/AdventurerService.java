@@ -2,6 +2,7 @@ package com.laplateforme.guildboard.application.service;
 import java.util.ArrayList;
 import java.util.List;
 import com.laplateforme.guildboard.application.dto.AssignmentAnswerDTO;
+import com.laplateforme.guildboard.application.exception.BusinessRuleException;
 import com.laplateforme.guildboard.application.exception.RessourceNotFoundException;
 import com.laplateforme.guildboard.application.repository.AssignmentRepository;
 import jakarta.transaction.Transactional;
@@ -62,6 +63,9 @@ public class AdventurerService {
     @Transactional
     public AdventurerAnswerDTO createAdventurer(AdventurerRequestDTO request) {
 
+        if(adventurerRepository.existsByName(request.name())){
+            throw new BusinessRuleException("NAME_ALREADY_EXIST", "Le prénom choisi existe déja!");
+        }
         Adventurer adventurer = new Adventurer(
                 request.name(),
                 request.characterClass()
@@ -82,7 +86,8 @@ public class AdventurerService {
     @Transactional
     public AdventurerAnswerDTO updateAdventurer(Long id, AdventurerRequestDTO request) {
 
-        Adventurer adventurer = adventurerRepository.findById(id).orElseThrow(()->new RessourceNotFoundException("ADVENTURER_NOT_FOUND","Aventurier non trouvé à l'id"+id));
+        Adventurer adventurer = adventurerRepository.findById(id)
+                .orElseThrow(()->new RessourceNotFoundException("ADVENTURER_NOT_FOUND","Aventurier non trouvé à l'id"+id));
 
             adventurer.setName(request.name());
             adventurer.setCharacterClass(request.characterClass());
@@ -104,6 +109,9 @@ public class AdventurerService {
     public void deleteAdventurer(Long id) {
         adventurerRepository.findById(id)
                 .orElseThrow(()->new RessourceNotFoundException("ADVENTURER_NOT_FOUND","Aventurier non trouvé à l'id : "+id));
+        if(assignmentRepository.existsByAdventurerId(id)){
+            throw new BusinessRuleException("ASSIGNMENT_EXISTS","Un aventurier avec des quêtes ne peut pas être supprimé!");
+        }
 
         adventurerRepository.deleteById(id);
     }

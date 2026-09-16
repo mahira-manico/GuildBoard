@@ -16,7 +16,6 @@ public record QuestRequestDTO(
         String description,
 
         @NotNull(message = "La difficulté est obligatoire!")
-        @Enumerated(EnumType.STRING)
         Difficulty difficulty,
 
         @Min(value = 1, message = "Le niveau doit être de 1 minimum")
@@ -30,6 +29,5 @@ public record QuestRequestDTO(
         Integer xpReward,
 
         @NotNull(message = "Le status est obligatoire!")
-        @Enumerated(EnumType.STRING)
         Status status
         ){}

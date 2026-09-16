@@ -1,6 +1,7 @@
 package com.laplateforme.guildboard.application.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -52,5 +53,16 @@ public class GlobalExceptionHandler {
                 "INTERNAL_SERVER_ERRROR",
                 "Une erreur inattendu est survenu");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDTO);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiErrorDTO>MessageErrorsException(HttpMessageNotReadableException msg){
+        ApiErrorDTO errorDTO=new ApiErrorDTO(
+                400,
+                "BAD_REQUEST",
+                "Le corps de la requête est mal formulé ou une valeur est incorrecte"
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDTO);
     }
 }

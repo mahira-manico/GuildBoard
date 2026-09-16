@@ -10,6 +10,8 @@ public interface
 AssignmentRepository extends JpaRepository<Assignment, Long> {
     List<Assignment> findByAdventurer_Id(Long adventurer_id); //Custom method to find an adventurer by his ID
     Optional<Assignment> findByQuestIdAndCompletedAtIsNull(Long quest_id); //Custom method to find by quest and check completedAt state
+    boolean existsByQuestId(Long questId);
+    boolean existsByAdventurerId(Long adventurerId);
 
 }
 

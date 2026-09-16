@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class QuestService {
@@ -55,29 +54,29 @@ public class QuestService {
                         quest.getStatus())).toList();
     }
 
-    //See all quests
-    public List<QuestAnswerDTO> seeAllQuests(){
-       return questRepository.findAll().stream().map(quest ->
-               new QuestAnswerDTO(
-                       quest.getId(),
-                       quest.getTitle(),
-                       quest.getDescription(),
-                       quest.getDifficulty(),
-                       quest.getRequiredLevel(),
-                       quest.getGoldReward(),
-                       quest.getXpReward(),
-                       quest.getStatus())).toList();
-
-    }
-
     //Method to filter quests using the three methods above
     public List<QuestAnswerDTO> filterBy(Status status, Difficulty difficulty){
-        if(status!=null && difficulty==null){
-            return findByStatus(status);
-        } else if (status==null && difficulty!=null) {
-            return findByDifficulty(difficulty);
-        }
-        else return seeAllQuests();
+        List<Quest> quest;
+
+        if(status!=null && difficulty!= null){
+            quest = questRepository.findByStatusAndDifficulty(status, difficulty);
+        } else if(status!=null){
+            quest = questRepository.findByStatus(status);
+        } else if (difficulty!=null) {
+           quest = questRepository.findByDifficulty(difficulty);
+        } else quest= questRepository.findAll();
+
+        return quest.stream().map(q -> new QuestAnswerDTO(
+                q.getId(),
+                q.getTitle(),
+                q.getDescription(),
+                q.getDifficulty(),
+                q.getRequiredLevel(),
+                q.getGoldReward(),
+                q.getGoldReward(),
+                q.getStatus())
+
+        ).toList();
     }
 
     //Method to see a quest using its ID
@@ -96,7 +95,12 @@ public class QuestService {
     }
 
     @Transactional //Use of transactional for methods who modify a table for better protection
+    //Method to create a quest
     public QuestAnswerDTO createQuest(QuestRequestDTO questRequestDTO){
+
+        if(questRepository.existsByTitle(questRequestDTO.title())){
+            throw new BusinessRuleException("TITLE_ALREADY_EXISTS","Le titre existe déja!");
+        }
 
         Quest createAQuest=new Quest(
                 questRequestDTO.title(),
@@ -131,6 +135,11 @@ public class QuestService {
         if(quest.getStatus()==Status.ON_GOING){
             throw new BusinessRuleException("QUEST_NOT_DONE","Une quête en cours ne peut pas être supprimé!");
         }
+
+        if(assignmentRepository.existsByQuestId(id)){
+            throw new BusinessRuleException("QUEST_HAVE_ASSIGNEMNT", "Une quête en cours ou passé ne peut être supprimé!");
+        }
+
         questRepository.delete(quest);
     }
 

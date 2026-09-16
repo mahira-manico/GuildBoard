@@ -43,14 +43,14 @@ public class AdventurerController {
 
     // Create a new adventurer
     @PostMapping
-    public ResponseEntity<AdventurerAnswerDTO> createAdventurer(@RequestBody @Valid AdventurerRequestDTO request) {
+    public ResponseEntity<AdventurerAnswerDTO> createAdventurer(@Valid @RequestBody AdventurerRequestDTO request) {
         AdventurerAnswerDTO created=adventurerService.createAdventurer(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     // Update an adventurer
     @PutMapping("/{id}")
-    public ResponseEntity<AdventurerAnswerDTO> updateAdventurer(@PathVariable Long id, @RequestBody @Valid AdventurerRequestDTO request) {
+    public ResponseEntity<AdventurerAnswerDTO> updateAdventurer(@PathVariable Long id,@Valid @RequestBody AdventurerRequestDTO request) {
         AdventurerAnswerDTO updated= adventurerService.updateAdventurer(id, request);
         return ResponseEntity.ok(updated);
     }
