@@ -1,14 +1,10 @@
 package com.laplateforme.guildboard.application.service;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
 import com.laplateforme.guildboard.application.dto.AssignmentAnswerDTO;
-import com.laplateforme.guildboard.application.entity.Assignment;
+import com.laplateforme.guildboard.application.exception.RessourceNotFoundErrors;
 import com.laplateforme.guildboard.application.repository.AssignmentRepository;
 import org.springframework.stereotype.Service;
-
 import com.laplateforme.guildboard.application.dto.AdventurerAnswerDTO;
 import com.laplateforme.guildboard.application.dto.AdventurerRequestDTO;
 import com.laplateforme.guildboard.application.entity.Adventurer;
@@ -34,88 +30,79 @@ public class AdventurerService {
         List<AdventurerAnswerDTO> answers = new ArrayList<>();
 
         for (Adventurer adventurer : adventurers) {
-            answers.add(toAnswerDTO(adventurer));
+            answers.add(new AdventurerAnswerDTO(
+                    adventurer.getId(),
+                    adventurer.getName(),
+                    adventurer.getCharacterClass(),
+                    adventurer.getLevel(),
+                    adventurer.getXp(),
+                    adventurer.getGold())
+            );
         }
 
         return answers;
     }
 
     // Get an adventurer by ID
-    public Optional<AdventurerAnswerDTO> getAdventurerById(Long id) {
+    public AdventurerAnswerDTO getAdventurerById(Long id) {
 
-        Optional<Adventurer> optionalAdventurer =
-                adventurerRepository.findById(id);
-
-        if (optionalAdventurer.isPresent()) {
-
-            Adventurer adventurer = optionalAdventurer.get();
-
-            AdventurerAnswerDTO dto = toAnswerDTO(adventurer);
-
-            return Optional.of(dto);
-        }
-
-        return Optional.empty();
+        Adventurer adventurer = adventurerRepository.findById(id)
+                        .orElseThrow(()->new RessourceNotFoundErrors("ADVENTURER_NOT_FOUND","Aventurier non trouvable avec l'id : "+id));
+        return new AdventurerAnswerDTO(
+                adventurer.getId(),
+                adventurer.getName(),
+                adventurer.getCharacterClass(),
+                adventurer.getLevel(),
+                adventurer.getXp(),
+                adventurer.getGold());
     }
 
     // Create a new adventurer
     public AdventurerAnswerDTO createAdventurer(AdventurerRequestDTO request) {
 
         Adventurer adventurer = new Adventurer(
-                request.getName(),
-                request.getCharacterClass()
+                request.name(),
+                request.characterClass()
         );
 
-        Adventurer savedAdventurer =
-                adventurerRepository.save(adventurer);
+        Adventurer savedAdventurer = adventurerRepository.save(adventurer);
 
-        return toAnswerDTO(savedAdventurer);
+        return new AdventurerAnswerDTO(
+                savedAdventurer.getId(),
+                savedAdventurer.getName(),
+                savedAdventurer.getCharacterClass(),
+                savedAdventurer.getLevel(),
+                savedAdventurer.getXp(),
+                savedAdventurer.getGold());
     }
 
     // Update an adventurer
-    public AdventurerAnswerDTO updateAdventurer(
-            Long id,
-            AdventurerRequestDTO request) {
+    public AdventurerAnswerDTO updateAdventurer(Long id, AdventurerRequestDTO request) {
 
-        Optional<Adventurer> optionalAdventurer =
-                adventurerRepository.findById(id);
+        Adventurer adventurer = adventurerRepository.findById(id).orElseThrow(()->new RessourceNotFoundErrors("ADVENTURER_NOT_FOUND","Aventurier non trouvé à l'id"+id));
 
-        if (optionalAdventurer.isPresent()) {
+            adventurer.setName(request.name());
+            adventurer.setCharacterClass(request.characterClass());
 
-            Adventurer adventurer = optionalAdventurer.get();
+            Adventurer savedAdventurer = adventurerRepository.save(adventurer);
 
-            adventurer.setName(request.getName());
-            adventurer.setCharacterClass(request.getCharacterClass());
+            return new AdventurerAnswerDTO(
+                    savedAdventurer.getId(),
+                    savedAdventurer.getName(),
+                    savedAdventurer.getCharacterClass(),
+                    savedAdventurer.getLevel(),
+                    savedAdventurer.getXp(),
+                    savedAdventurer.getGold());
 
-            Adventurer savedAdventurer =
-                    adventurerRepository.save(adventurer);
-
-            return toAnswerDTO(savedAdventurer);
-        }
-
-        return null;
     }
 
     // Delete an adventurer
     public void deleteAdventurer(Long id) {
+        adventurerRepository.findById(id).orElseThrow(()->new RessourceNotFoundErrors("ADVENTURER_NOT_FOUND","Aventurier non trouvé à l'id : "+id));
         adventurerRepository.deleteById(id);
     }
 
-    // Convert an adventurer to an answer DTO
-    private AdventurerAnswerDTO toAnswerDTO(Adventurer adventurer) {
-
-        AdventurerAnswerDTO dto = new AdventurerAnswerDTO();
-
-        dto.setId(adventurer.getId());
-        dto.setName(adventurer.getName());
-        dto.setCharacterClass(adventurer.getCharacterClass());
-        dto.setLevel(adventurer.getLevel());
-        dto.setXp(adventurer.getXp());
-        dto.setGold(adventurer.getGold());
-
-        return dto;
-    }
-
+    //See an adventurer history
     public List<AssignmentAnswerDTO> getAdventurerHistory(Long id) {
         return assignmentRepository.findByAdventurer_Id(id).stream()
                 .map(assignment -> new AssignmentAnswerDTO(

@@ -1,4 +1,4 @@
-package com.laplateforme.guildboard.application.Exception;
+package com.laplateforme.guildboard.application.exception;
 
 public record ApiErrorDTO(Integer status, String code, String message) {
 }

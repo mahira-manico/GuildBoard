@@ -2,6 +2,8 @@ package com.laplateforme.guildboard.application.service;
 import com.laplateforme.guildboard.application.dto.QuestRequestDTO;
 import com.laplateforme.guildboard.application.dto.QuestAnswerDTO;
 import com.laplateforme.guildboard.application.entity.*;
+import com.laplateforme.guildboard.application.exception.BusinessRuleErrors;
+import com.laplateforme.guildboard.application.exception.RessourceNotFoundErrors;
 import com.laplateforme.guildboard.application.repository.AdventurerRepository;
 import com.laplateforme.guildboard.application.repository.AssignmentRepository;
 import com.laplateforme.guildboard.application.repository.QuestRepository;
@@ -75,7 +77,7 @@ public class QuestService {
 
 
     public QuestAnswerDTO seeQuest(Long id){
-        Quest quest=questRepository.findById(id).orElseThrow(()->new RuntimeException("Quest not found!"));
+        Quest quest=questRepository.findById(id).orElseThrow(()->new RessourceNotFoundErrors("QUEST_NOT_FOUND","Quête non trouvé à l'id : "+id));
         return new QuestAnswerDTO(
                 quest.getId(),
                 quest.getTitle(),
@@ -88,41 +90,45 @@ public class QuestService {
     }
 
     public QuestAnswerDTO createQuest(QuestRequestDTO questRequestDTO){
-        if (questRequestDTO.title()==null|| questRequestDTO.title().trim().isEmpty()){
-            throw new RuntimeException("Quest title is required!");
-        }
-        if (questRequestDTO.description()==null|| questRequestDTO.description().length()>500|| questRequestDTO.description().length()<10){
-            throw new RuntimeException("Text length must be between 10 and 500 characters!");
-        }
 
-        if (questRequestDTO.requiredLevel()<1){
-            throw new RuntimeException("Level must be 1 minimum!");
-        }
+        Quest createAQuest=new Quest(
+                questRequestDTO.title(),
+                questRequestDTO.description(),
+                questRequestDTO.difficulty(),
+                questRequestDTO.requiredLevel(),
+                questRequestDTO.goldReward(),
+                questRequestDTO.xpReward());
 
-        if(questRequestDTO.xpReward()<0){
-            throw new RuntimeException("Xp gains must be positive!");
-        }
-
-        Quest createAQuest=new Quest(questRequestDTO.title(), questRequestDTO.description(), questRequestDTO.difficulty(), questRequestDTO.requiredLevel(), questRequestDTO.goldReward(), questRequestDTO.xpReward());
         createAQuest.setStatus(Status.AVAILABLE);
+
         Quest savedQuest=questRepository.save(createAQuest);
-        return new QuestAnswerDTO(savedQuest.getId(), savedQuest.getTitle(), savedQuest.getDescription(), savedQuest.getDifficulty(), savedQuest.getRequiredLevel(), savedQuest.getGoldReward(), savedQuest.getXpReward(), savedQuest.getStatus());
+
+        return new QuestAnswerDTO(
+                savedQuest.getId(),
+                savedQuest.getTitle(),
+                savedQuest.getDescription(),
+                savedQuest.getDifficulty(),
+                savedQuest.getRequiredLevel(),
+                savedQuest.getGoldReward(),
+                savedQuest.getXpReward(),
+                savedQuest.getStatus());
     }
 
     public void deleteQuest(Long id){
 
-        Quest quest=questRepository.findById(id).orElseThrow(()->new RuntimeException("Quest not found"));
+        Quest quest=questRepository.findById(id).orElseThrow(()->new RessourceNotFoundErrors("QUEST_NOT_FOUND","La quête est introuvable avec l'id : "+id));
+
         if(quest.getStatus()==Status.ON_GOING){
-            throw new RuntimeException("Quest cannot be deleted while on_going!");
+            throw new BusinessRuleErrors("QUEST_NOT_DONE","Une quête en cours ne peut pas être supprimé!");
         }
         questRepository.delete(quest);
     }
 
     public QuestAnswerDTO updateQuest(Long id, QuestRequestDTO questRequestDTO){
 
-        Quest currentQuest=questRepository.findById(id).orElseThrow(()->new RuntimeException("Quest not found!"));
+        Quest currentQuest=questRepository.findById(id).orElseThrow(()->new RessourceNotFoundErrors("QUEST_NOT_FOUND","La quête est introuvable avec l'id : "+id));
         if(currentQuest.getStatus()!=Status.AVAILABLE){
-            throw new RuntimeException("Quest cannot be modified if already chosen");
+            throw new BusinessRuleErrors("QUEST_ON_GOING","Une quête en cours ne peut être modifié!");
         }
 
         currentQuest.setTitle(questRequestDTO.title());

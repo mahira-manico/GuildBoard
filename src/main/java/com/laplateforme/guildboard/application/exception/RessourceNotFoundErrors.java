@@ -1,4 +1,4 @@
-package com.laplateforme.guildboard.application.Exception;
+package com.laplateforme.guildboard.application.exception;
 
 public class RessourceNotFoundErrors extends RuntimeException {
 

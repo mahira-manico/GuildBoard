@@ -1,4 +1,4 @@
-package com.laplateforme.guildboard.application.Exception;
+package com.laplateforme.guildboard.application.exception;
 
 public class BusinessRuleErrors extends RuntimeException{
     private final String code;

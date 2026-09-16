@@ -6,30 +6,16 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public class AdventurerRequestDTO {
+public record AdventurerRequestDTO(
 
-    @NotBlank(message = "Name field cannot be blank")
+    @NotBlank(message = "Le prénom est obligatoire!")
     @Size(min = 2, max = 50)
-    private String name;
+    String name,
 
-    @NotNull(message = "Character class must be chosen!")
+    @NotNull(message = "Une classe de personnage doit être choisi!")
     @Enumerated(EnumType.STRING)
-    private CharacterClass characterClass;
+    CharacterClass characterClass
+    ) {
 
-    // Getters
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-     // Setters
-    public CharacterClass getCharacterClass() {
-        return characterClass;
-    }
-
-    public void setCharacterClass(CharacterClass characterClass) {
-        this.characterClass = characterClass;
-    }
 }
+
