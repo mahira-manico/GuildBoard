@@ -64,7 +64,7 @@ public class AssignmentService {
         return new AssignmentAnswerDTO(
                 addQuest.getId(),
                 addQuest.getAdventurer().getId(),
-                addQuest.getQuest().getId(),
+                addQuest.getQuest(),
                 addQuest.getAssignedAt(),
                 addQuest.getCompletedAt()
         );

@@ -123,7 +123,7 @@ public class AdventurerService {
                 .map(assignment -> new AssignmentAnswerDTO(
                         assignment.getId(),
                         assignment.getAdventurer().getId(),
-                        assignment.getQuest().getId(),
+                        assignment.getQuest(),
                         assignment.getAssignedAt(),
                         assignment.getCompletedAt())).toList();
     }
