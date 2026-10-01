@@ -1,5 +1,4 @@
 import { AdventurerPage } from './pages/AdventurerPage';
-import './App.css';
 import { QuestPage } from './pages/QuestPage';
 
 function App() {
